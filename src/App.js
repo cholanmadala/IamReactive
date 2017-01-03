@@ -1,5 +1,6 @@
 import React from 'react';
 import Table from './Table';
+import Transpiler from './Transpiler';
 
 // ES6 way of writing the State/Stateless React component
 class App extends React.Component{
@@ -12,76 +13,92 @@ class App extends React.Component{
 			Name : 'Cholan',
 			Age : 27,
 			Location : 'Vinukonda',
-			Department : 'CSP-1'
+			Department : 'CSP-1',
+			currentEvent : '---',
+			items : []
 		};
-	};
 
-	updateName(e){
-			this.setState({
-				Name : e.target.value
-			})
+		this.update = this.update.bind(this)
 	}
 
-	updateAge(e){
-			this.setState({
-				Age : e.target.value
-			})
+	update(e) {
+		this.setState({currentEvent:e.type});
 	}
 
-	updateLocation(e){
+	updateThings(){
 			this.setState({
-				Location : e.target.value
-			})
-	}
-
-	updateDept(e){
-			this.setState({
-				Department : e.target.value
+				Name : this.refs.nameInput.value,
+				Age: this.refs.ageInput.value,
+				Location: this.refs.locationInput.value,
+				Department:this.refs.deptInput.value
 			})
 	}
 
 	render(){
+
 		return (
+			<div>
 				<div>
-					<h1> {this.props.defaultMessage}!!!</h1>
-					<h2>Please input your details in here:</h2>
-					<div className="divTable mainStyle" >
-					<div className="divTableBody">
-					<div className="divTableRow">
-					<div className="divTableCell">Name : </div>
-					<div className="divTableCell"><input type="text" onChange={this.updateName.bind(this)} /></div>
-					</div>
-					<div className="divTableRow">
-					<div className="divTableCell">Age : </div>
-					<div className="divTableCell"><input type="number" onChange={this.updateAge.bind(this)}  /></div>
-					</div>
-					<div className="divTableRow">
-					<div className="divTableCell">Location : </div>
-					<div className="divTableCell"><input type="text" onChange={this.updateLocation.bind(this)} /></div>
-					</div>
-					<div className="divTableRow">
-					<div className="divTableCell">Department : </div>
-					<div className="divTableCell"><input type="text" onChange={this.updateDept.bind(this)} /></div>
-					</div>
-					</div>
-					</div>
-					<p>The name of the individual is {this.props.name}({this.props.age}).</p>
+				{/*<Transpiler></Transpiler>*/}
+					<h1>{this.props.defaultMessage}!!!</h1>
+					<h2>{this.props.children}</h2>
+					<h2>The current event is {this.state.currentEvent}</h2>
+						<div className="divTable mainStyle" >
+							<div className="divTableBody">
+								<div className="divTableRow">
+									<div className="divTableCell">Name : </div>
+									<div className="divTableCell"><input ref="nameInput" type="text" /></div>
+								</div>
+								<div className="divTableRow">
+									<div className="divTableCell">Age : </div>
+									<div className="divTableCell"><input ref="ageInput" type="number" onChange={this.updateThings.bind(this)}  /></div>
+								</div>
+								<div className="divTableRow">
+									<div className="divTableCell">Location : </div>
+									<div className="divTableCell"><input ref="locationInput" type="text" onChange={this.updateThings.bind(this)} /></div>
+								</div>
+								<div className="divTableRow">
+									<div className="divTableCell">Department : </div>
+									<div
+										onKeyPress={this.update}
+										onFocus={this.update}
+										onBlur={this.update}
+										onCopy={this.update}
+										onCut={this.update}
+										onPaste={this.update}
+										className="divTableCell"><input ref="deptInput" type="text" onChange={this.updateThings.bind(this)} /></div>
+								</div>
+							</div>
+						</div>
+					<p>The name of the individual is <b> <i>{this.props.name}</i> </b> ({this.props.age}).</p>
 					<p>This is a normal paragraph. </p>
-					<Table Name={this.state.Name} Age={this.state.Age} Location={this.state.Location} Department={this.state.Department}></Table>
+					<Table Column1={this.props.Column1} Column2={this.props.Column2} Column3={this.props.Column3} Column4={this.props.Column4}></Table>
 				</div>
-			);
+			</div>
+		);
 	}
 };
 
 App.defaultProps={
 	defaultMessage : "Hello (default) ",
-	name : 'Mr/Mrs ....',
-	age :  21
+	age :  21,
+	Column1 : 'Name',
+	Column2 : 'Gender',
+	Column3 : 'Year of Birth',
+	Column4 : 'Eye Color'
 };
 
 App.propTypes={
 	defaultMessage : React.PropTypes.string.isRequired,
-	name : React.PropTypes.string.isRequired,
+	// name : React.PropTypes.string.isRequired,
+	name(props, propName, component){
+		if(!(propName in props)) {
+			return new Error(`missing ${propName}`)
+		}
+		else if (props[propName].length < 6) {
+			return new Error(`The name is too short....`);
+		}
+	},
 	age : React.PropTypes.number.isRequired,
 }
 
